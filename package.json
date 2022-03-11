@@ -1,0 +1,27 @@
+{
+    "name": "support-desk-app",
+    "version": "1.0.0",
+    "description": "Support Ticket App",
+    "main": "server.js",
+    "scripts": {
+        "start": "node backend/server.js",
+        "serve": "nodemon backend/server.js",
+        "client": "npm start --prefix frontend",
+        "dev": "concurrently \"npm run serve\" \"npm run client\""
+    },
+    "author": "Matt Ruetz",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "colors": "^1.4.0",
+        "concurrently": "^7.0.0",
+        "dotenv": "^16.0.0",
+        "express": "^4.17.3",
+        "express-async-handler": "^1.2.0",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^6.2.5"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.15"
+    }
+}
