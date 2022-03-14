@@ -6,7 +6,7 @@ const { User } = require('../models/userModel');
 const { Ticket } = require('../models/ticketModel');
 
 // @desc get user tickets
-// @route /api/tickets/me
+// @route GET /api/tickets/me
 // @access Private
 const getTickets = asyncHandler(async (req, res) => {
     // Get user based on _id in webToken
@@ -17,9 +17,38 @@ const getTickets = asyncHandler(async (req, res) => {
         throw new Error('User not found');
     }
 
+    // finds ALL tickets created by this user
     const tickets = await Ticket.find({ user: req.user.id });
 
     res.status(200).json(tickets);
+});
+
+// @desc get user ticket
+// @route GET /api/tickets/:id
+// @access Private
+const getTicket = asyncHandler(async (req, res) => {
+    // Get user based on _id in webToken
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        res.status(401);
+        throw new Error('User not found');
+    }
+
+    // Finds SINGLE ticket with ID matching one given as URL param ( /:id ) (see ticketRoutes)
+    const ticket = await Ticket.findById(req.params.id);
+
+    if (!ticket) {
+        res.status(404);
+        throw new Error('Ticket not found');
+    }
+
+    if (ticket.user.toString() !== req.user.id) {
+        res.status(401);
+        throw new Error('User not authorized to access this ticket');
+    }
+
+    res.status(200).json(ticket);
 });
 
 // @desc create new ticket
@@ -51,4 +80,74 @@ const createTicket = asyncHandler(async (req, res) => {
     res.status(201).json(ticket);
 });
 
-module.exports = { getTickets, createTicket };
+// @desc get user ticket
+// @route DELETE /api/tickets/:id
+// @access Private
+const deleteTicket = asyncHandler(async (req, res) => {
+    // Get user based on _id in webToken
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        res.status(401);
+        throw new Error('User not found');
+    }
+
+    // Finds SINGLE ticket with ID matching one given as URL param ( /:id ) (see ticketRoutes)
+    const ticket = await Ticket.findById(req.params.id);
+
+    if (!ticket) {
+        res.status(404);
+        throw new Error('Ticket not found');
+    }
+
+    if (ticket.user.toString() !== req.user.id) {
+        res.status(401);
+        throw new Error('User not authorized to access this ticket');
+    }
+
+    await ticket.remove();
+
+    res.status(200).json({ success: true });
+});
+
+// @desc get user ticket
+// @route PUT /api/tickets/:id
+// @access Private
+const updateTicket = asyncHandler(async (req, res) => {
+    // Get user based on _id in webToken
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        res.status(401);
+        throw new Error('User not found');
+    }
+
+    // Finds SINGLE ticket with ID matching one given as URL param ( /:id ) (see ticketRoutes)
+    const ticket = await Ticket.findById(req.params.id);
+
+    if (!ticket) {
+        res.status(404);
+        throw new Error('Ticket not found');
+    }
+
+    if (ticket.user.toString() !== req.user.id) {
+        res.status(401);
+        throw new Error('User not authorized to access this ticket');
+    }
+
+    const updatedTicket = await Ticket.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true } //If not found, create new
+    );
+
+    res.status(200).json(updatedTicket);
+});
+
+module.exports = {
+    getTickets,
+    getTicket,
+    createTicket,
+    deleteTicket,
+    updateTicket,
+};
