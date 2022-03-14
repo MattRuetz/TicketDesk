@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 
 // Can create endpoints from other files by adding as middleware with app.use
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/tickets', require('./routes/ticketRoutes'));
 app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server started on Port ${PORT}`));
