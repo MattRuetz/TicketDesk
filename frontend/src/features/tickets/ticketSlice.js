@@ -57,6 +57,29 @@ export const getTickets = createAsyncThunk(
     }
 );
 
+// Get a ticket
+export const getTicket = createAsyncThunk(
+    'tickets/get',
+    async (ticketId, thunkAPI) => {
+        try {
+            // This is why redux toolkit is nice ... can get from another state with getState
+            const token = thunkAPI.getState().auth.user.token;
+            // state.pending... -> state.fulfilled (async)
+            return await ticketService.getTicket(ticketId, token);
+        } catch (error) {
+            // state.rejected
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 export const ticketSlice = createSlice({
     name: 'ticket',
     initialState,
@@ -88,6 +111,20 @@ export const ticketSlice = createSlice({
                 state.tickets = action.payload;
             })
             .addCase(getTickets.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+                console.log('rejected');
+            })
+            .addCase(getTicket.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getTicket.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.ticket = action.payload;
+            })
+            .addCase(getTicket.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
