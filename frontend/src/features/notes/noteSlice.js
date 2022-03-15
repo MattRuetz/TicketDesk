@@ -9,6 +9,30 @@ const initialState = {
     messagee: '',
 };
 
+// Get ticket notes
+export const getNotes = createAsyncThunk(
+    'notes/getAll',
+    async (ticketId, thunkAPI) => {
+        try {
+            // This is why redux toolkit is nice ... can get from another state with getState
+            const token = thunkAPI.getState().auth.user.token;
+            // state.pending... -> state.fulfilled (async)
+            return await noteService.getNotes(ticketId, token);
+        } catch (error) {
+            // state.rejected
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+// REDUCER
 export const noteSlice = createSlice({
     name: 'note',
     initialState,
@@ -33,29 +57,6 @@ export const noteSlice = createSlice({
             });
     },
 });
-
-// Get ticket notes
-export const getNotes = createAsyncThunk(
-    'notes/getAll',
-    async (ticketId, thunkAPI) => {
-        try {
-            // This is why redux toolkit is nice ... can get from another state with getState
-            const token = thunkAPI.getState().auth.user.token;
-            // state.pending... -> state.fulfilled (async)
-            return await noteService.getNotes(ticketId, token);
-        } catch (error) {
-            // state.rejected
-            const message =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString();
-
-            return thunkAPI.rejectWithValue(message);
-        }
-    }
-);
 
 export const { reset } = noteSlice.actions;
 export default noteSlice.reducer;
