@@ -10,7 +10,7 @@ function NewTicket() {
     const { user } = useSelector((state) => state.auth);
     // get ticket from global states
     const { isLoading, isError, isSuccess, message } = useSelector(
-        (state) => state.ticket
+        (state) => state.tickets
     );
     const [name, setName] = useState(user.name);
     const [email, setEmail] = useState(user.email);
@@ -35,7 +35,7 @@ function NewTicket() {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        product.length === 0 && setProduct('iPhone');
+        !product && setProduct('iPhone');
         dispatch(createTicket({ product, description }));
     };
 
