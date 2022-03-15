@@ -33,10 +33,10 @@ function Tickets() {
         <>
             <BackButton url="/" />
             <h1>Tickets</h1>
-            <div className="tickets">
-                <div>Date</div>
+            <div className="ticket">
                 <div>Product</div>
                 <div>Status</div>
+                <div>Click to View</div>
             </div>
             {tickets.map((ticket) => (
                 <TicketItem key={ticket._id} ticket={ticket} />
