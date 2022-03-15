@@ -7,7 +7,10 @@ const {
     updateTicket,
 } = require('../controllers/ticketController');
 
+// Re-route router into noteRouter
+const noteRouter = require('./noteRoutes');
 const router = express.Router();
+router.use('/:ticketId/notes', noteRouter);
 
 const { protect } = require('../middleware/authMiddleware');
 
